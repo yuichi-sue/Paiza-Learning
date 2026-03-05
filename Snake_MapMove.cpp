@@ -48,10 +48,15 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#ifdef _DEBUG
-#include <fstream>
-#endif
 #include <assert.h>
+
+//-----------------------------------
+// プロトタイプ宣言
+struct Vec2;
+
+
+//-----------------------------------
+// 構造体宣言
 
 struct Vec2 {
 	int x;
@@ -61,15 +66,37 @@ struct Vec2 {
 struct Snake {
 	Vec2 pos;	// 現在座標
 	Vec2 dir;	// 進行方向
+
+	Snake();
+
+	// 左右に方向転換する
+	// \param	state	'L':左回転  'R':右回転
+	void Turn(char state);
+
+	// 前進移動する
+	void Move();
+
 };
 
 struct Map {
 	Vec2 size;
 	std::vector<std::string> data;
 
-	Map() : size({ 0, 0 }), data(0) {}
+	Map() : size(), data() {}
+
 	const char operator ()(const Vec2 &pos) const;
-	char& operator ()(const Vec2& pos);
+	char& operator ()(const Vec2 &pos);
+
+	// 指定座標のマップ内外判定結果を返す
+	// \return	true:マップ内, false:マップ外
+	// \param	pos	指定座標
+	bool IsInside(const Vec2 &pos) const;
+
+	// 指定座標の状態と一致確認する
+	// \return	true:一致, false:不一致
+	// \param	pos		指定座標
+	// \param	state	チェックする状態
+	bool IsEqualState(const Vec2 &pos, const char state) const;
 };
 
 struct Query {
@@ -80,56 +107,17 @@ struct Query {
 constexpr int TIME_START = 0;
 constexpr int TIME_END = 99;
 
-constexpr char MAP_CHAR_WALL = '#';
-constexpr char MAP_CHAR_BLANK = '.';
-constexpr char MAP_CHAR_MOVED = '*';
+constexpr char MAP_STATE_WALL = '#';
+constexpr char MAP_STATE_BLANK = '.';
+constexpr char MAP_STATE_MOVED = '*';
 
 constexpr char QUERY_TURN_LEFT = 'L';
 constexpr char QUERY_TURN_RIGHT = 'R';
 
 constexpr Vec2 SNAKE_FIRST_DIR = {0, -1};	// 北向き
 
-bool IsInside(const Map &map, const Vec2 &pos) {
-	return pos.x >= 0 && pos.x < map.size.x && pos.y >= 0 && pos.y < map.size.y;
-}
-
-bool IsWall(const Map &map, const Vec2 &pos) {
-	assert(IsInside(map, pos));
-	return map.data[pos.y][pos.x] == MAP_CHAR_WALL;
-}
-
-bool IsMoved(const Map &map, const Vec2 &pos) {
-	return map(pos) == MAP_CHAR_MOVED;
-}
-
-void TurnLeft(Snake& snake) {
-	int tmp = snake.dir.x;
-	snake.dir.x = snake.dir.y;
-	snake.dir.y = -tmp;
-}
-
-void TurnRight(Snake& snake) {
-	int tmp = snake.dir.x;
-	snake.dir.x = -snake.dir.y;
-	snake.dir.y = tmp;
-}
-
-// 進行方向に移動する
-void Move(Map &map, Snake& snake) {
-	// 位置座標を更新
-	snake.pos.x += snake.dir.x;
-	snake.pos.y += snake.dir.y;
-	// マップ情報を更新
-	map(snake.pos) = MAP_CHAR_MOVED;
-}
-
 
 int main() {
-#ifdef _DEBUG
-	std::ifstream in("input.txt");
-	std::cin.rdbuf(in.rdbuf());
-#endif
-
 	Snake snake;
 	Map map;
 	int moveCnt;
@@ -145,47 +133,46 @@ int main() {
 	for (int i = 0; i < map.size.y; i++) {
 		std::cin >> map.data[i];
 	}
-	map(snake.pos) = MAP_CHAR_MOVED;
+	map(snake.pos) = MAP_STATE_MOVED;
 
 	// 移動命令読み込み
 	std::vector<Query> moveQuery(moveCnt);
+	int idxQuery = 0;
 	for (int i = 0; i < moveCnt; i++) {
 		Query& query = moveQuery[i];
 		std::cin >> query.timeStamp >> query.turn;
 	}
-
+	// タイムスタンプ順にソート
 	std::sort(moveQuery.begin(), moveQuery.end(), [](Query& a, Query& b) { return a.timeStamp < b.timeStamp; });
-	int idxQuery = 0;
 
 	//-----------------------------------
 	// 移動処理
 	for (int time = TIME_START; time <= TIME_END; time++) {
 		if (idxQuery < moveQuery.size() && time == moveQuery[idxQuery].timeStamp) {
 			// 方向転換処理
-			const char turn = moveQuery[idxQuery].turn;
-			if (turn == QUERY_TURN_LEFT) {
-				TurnLeft(snake);
-			}
-			else if (turn == QUERY_TURN_RIGHT) {
-				TurnRight(snake);
-			}
+			snake.Turn(moveQuery[idxQuery].turn);
+
 			// インデックスカウンタの更新
 			idxQuery++;
 		}
 
+		// 次の移動座標を計算
 		Vec2 nextPos = { snake.pos.x + snake.dir.x, snake.pos.y + snake.dir.y };
-		if (!IsInside(map, nextPos) || 
-			IsWall(map, nextPos) || 
-			IsMoved(map, nextPos))
+		if (!map.IsInside(nextPos) || 
+			map.IsEqualState(nextPos, MAP_STATE_WALL) || 
+			map.IsEqualState(nextPos, MAP_STATE_MOVED))
+			// 移動できなかったため、終了する
 			break;
 
-		Move(map, snake);
+		// 移動更新処理
+		snake.Move();
+		map(nextPos) = MAP_STATE_MOVED;
 	}
 
 	//-----------------------------------
 	// 表示処理
 	for (int i = 0; i < map.size.y; i++) {
-		std::cout << map.data[i] << std::endl;
+		std::cout << map.data[i] << '\n';
 	}
 
 	//-----------------------------------
@@ -197,12 +184,46 @@ int main() {
 
 const char Map::operator()(const Vec2& pos) const
 {
-	assert(IsInside(*this, pos));
+	assert(this->IsInside(pos));
 	return this->data[pos.y][pos.x];
 }
 
 char& Map::operator()(const Vec2& pos)
 {
-	assert(IsInside(*this, pos));
+	assert(this->IsInside(pos));
 	return this->data[pos.y][pos.x];
+}
+
+bool Map::IsInside(const Vec2& pos) const
+{
+	return pos.x >= 0 && pos.x < this->size.x && pos.y >= 0 && pos.y < this->size.y;
+}
+
+bool Map::IsEqualState(const Vec2& pos, const char state) const
+{
+	return (*this)(pos) == state;
+}
+
+Snake::Snake() : pos({0, 0}), dir(SNAKE_FIRST_DIR)
+{
+}
+
+void Snake::Turn(char state)
+{
+	if (state == QUERY_TURN_LEFT) {
+		// 回転行列の定義により, 左回転のベクトルを作成
+		Vec2 vec = {dir.y, -dir.x};
+		dir = vec;
+	}
+	else if (state == QUERY_TURN_RIGHT) {
+		// 回転行列の定義により, 右回転のベクトルを作成
+		Vec2 vec = {-dir.y, dir.x};
+		dir = vec;
+	}
+}
+
+void Snake::Move()
+{
+	pos.x += dir.x;
+	pos.y += dir.y;
 }
