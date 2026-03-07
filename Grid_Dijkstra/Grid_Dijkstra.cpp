@@ -96,7 +96,7 @@ int main(void) {
             if (next.cost >= nodeCosts[next.index]) {
                 continue;
             }
-            nodeCosts[next.index] = next.cost;;
+            nodeCosts[next.index] = next.cost;
             indexParents[next.index] = current.index;
 
             dijkstra.push(next);
@@ -138,3 +138,4 @@ int main(void) {
 
     return 0;
 }
+
