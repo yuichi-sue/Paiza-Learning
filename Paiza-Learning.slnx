@@ -3,6 +3,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Geometry/">
+    <Project Path="Geometry/Geometry_1/Geometry_1.vcxproj" Id="faa55dd4-3db9-4b50-9ead-2569cb22d1aa" />
+  </Folder>
   <Project Path="Distorted_Reversi/Distorted_Reversi.vcxproj" Id="cb289909-12f1-460f-8226-10ee2a1b479d" />
   <Project Path="Grid_Dijkstra/Grid_Dijkstra.vcxproj" Id="18c83b0e-51e2-4bdd-8e14-383a49edf290" />
   <Project Path="Snake_MapMove/Snake_MapMove.vcxproj" Id="f6180485-0f69-4de5-81c9-c8965ff497dc" />
