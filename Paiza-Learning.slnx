@@ -6,6 +6,7 @@
   <Folder Name="/Geometry/">
     <Project Path="Geometry/Geometry_1/Geometry_1.vcxproj" Id="faa55dd4-3db9-4b50-9ead-2569cb22d1aa" />
     <Project Path="Geometry/Geometry_2/Geometry_2.vcxproj" Id="d5ba7bc3-6a0a-409f-826e-df74229919bd" />
+    <Project Path="Geometry/Geometry_3/Geometry_3.vcxproj" Id="5ed93870-5b52-4bd7-930c-bb7e06a2175f" />
   </Folder>
   <Project Path="Distorted_Reversi/Distorted_Reversi.vcxproj" Id="cb289909-12f1-460f-8226-10ee2a1b479d" />
   <Project Path="Grid_Dijkstra/Grid_Dijkstra.vcxproj" Id="18c83b0e-51e2-4bdd-8e14-383a49edf290" />
