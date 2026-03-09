@@ -1,6 +1,6 @@
 #include <iostream>
 
-bool DetectCircleAABB(long long x1, long long y1, long long r, long long x2, long long y2, long long x3, long long y3) {
+bool IsIntersectsCircleAABB(long long x1, long long y1, long long r, long long x2, long long y2, long long x3, long long y3) {
 	// 円に最も近い点を求める.
 	long long px, py;
 	px = std::min(std::max(x1, x2), x3);
@@ -38,7 +38,7 @@ int main() {
 		return 0;
 	}
 
-	if (DetectCircleAABB(x1, y1, r, x2, y2, x3, y3)) {
+	if (IsIntersectsCircleAABB(x1, y1, r, x2, y2, x3, y3)) {
 		std::cout << "Yes\n";
 	}
 	else {
