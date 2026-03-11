@@ -8,6 +8,9 @@
     <Project Path="Geometry/Geometry_2/Geometry_2.vcxproj" Id="d5ba7bc3-6a0a-409f-826e-df74229919bd" />
     <Project Path="Geometry/Geometry_3/Geometry_3.vcxproj" Id="5ed93870-5b52-4bd7-930c-bb7e06a2175f" />
   </Folder>
+  <Folder Name="/SkillCheck/">
+    <Project Path="SkillCheck/SkillCheck_S002/SkillCheck_S002.vcxproj" Id="41bb7c91-f8e3-4e5a-aa38-4bfdacd5ca3f" />
+  </Folder>
   <Project Path="Distorted_Reversi/Distorted_Reversi.vcxproj" Id="cb289909-12f1-460f-8226-10ee2a1b479d" />
   <Project Path="Grid_Dijkstra/Grid_Dijkstra.vcxproj" Id="18c83b0e-51e2-4bdd-8e14-383a49edf290" />
   <Project Path="Snake_MapMove/Snake_MapMove.vcxproj" Id="f6180485-0f69-4de5-81c9-c8965ff497dc" />
